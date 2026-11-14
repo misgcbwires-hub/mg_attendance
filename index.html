@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#122d4e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MG Attendance">
+  <meta name="description" content="MG Attendance mobile app">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="icon" type="image/png" href="./icons/icon-192.png">
+  <title>MG Attendance</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin:0; width:100%; height:100%; background:#f3f6fa; font-family:Arial,sans-serif; }
+    body { display:flex; flex-direction:column; }
+    header { min-height:52px; padding:8px 12px; background:#122d4e; color:white; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .brand { font-weight:700; letter-spacing:.2px; }
+    .actions { display:flex; gap:7px; }
+    button, .openlink { border:0; border-radius:8px; padding:9px 11px; font-weight:600; text-decoration:none; cursor:pointer; font-size:13px; }
+    button { background:#efb241; color:#172b42; }
+    .openlink { background:#ffffff; color:#122d4e; }
+    main { flex:1; min-height:0; position:relative; }
+    iframe { display:block; border:0; width:100%; height:100%; background:white; }
+    .note { padding:8px 12px; font-size:12px; color:#4b5563; background:#fff; border-top:1px solid #e5e7eb; }
+    @media (display-mode: standalone) { header { padding-top: max(8px, env(safe-area-inset-top)); } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">MG Attendance</div>
+    <div class="actions">
+      <button id="installBtn" hidden>Install App</button>
+      <a class="openlink" href="https://script.google.com/macros/s/AKfycbwv3nJxDrN-qWcUKPo_Ya0xgyck3duI2-qwNX-FzlfZllL1v6l8AK0sDHYXzLDT7tVk/exec" target="_blank" rel="noopener">Open directly</a>
+    </div>
+  </header>
+  <main>
+    <iframe
+      src="https://script.google.com/macros/s/AKfycbwv3nJxDrN-qWcUKPo_Ya0xgyck3duI2-qwNX-FzlfZllL1v6l8AK0sDHYXzLDT7tVk/exec"
+      title="MG Attendance"
+      allow="clipboard-read; clipboard-write; geolocation"
+      allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin">
+    </iframe>
+  </main>
+  <div class="note">If the attendance page does not load here, tap “Open directly” to launch it in Google Apps Script.</div>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js").catch(console.error));
+    }
+    let installPrompt;
+    const installBtn = document.getElementById("installBtn");
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      installPrompt = event;
+      installBtn.hidden = false;
+    });
+    installBtn.addEventListener("click", async () => {
+      if (!installPrompt) return;
+      installPrompt.prompt();
+      await installPrompt.userChoice;
+      installPrompt = null;
+      installBtn.hidden = true;
+    });
+  </script>
+</body>
+</html>
